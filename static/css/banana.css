@@ -1,0 +1,233 @@
+body
+{
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#c5deea+0,8abbd7+31,066dab+100;Web+2.0+Blue+3D+%231 */
+    background: #c5deea; /* Old browsers */
+    background: -moz-linear-gradient(top,  #c5deea 0%, #8abbd7 31%, #066dab 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top,  #c5deea 0%,#8abbd7 31%,#066dab 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom,  #c5deea 0%,#8abbd7 31%,#066dab 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c5deea', endColorstr='#066dab',GradientType=0 );  IE6-9
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+xbody
+{
+    height: 100%;
+    color:black;
+    background: repeating-linear-gradient(
+        to bottom,
+        #f6ba52 10px,
+        #f6ba52 2px,
+        #ffd180 2px,
+        #ffd180 4px
+    );
+    font-family: 'Montserrat', sans-serif !important;
+}
+.stripe-6 {
+    color: black;
+    background: repeating-linear-gradient(
+        to right,
+        #f6ba52,
+        #f6ba52 10px,
+        #ffd180 10px,
+        #ffd180 20px
+    );
+}
+/*#resultat*/
+#tableau
+{
+    font-size: 12px !important;
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    /*width:60%;*/
+}
+#resultat
+{
+    /*width:60%;*/
+}
+
+/*#gbox_resultat
+{
+    margin-left: auto;
+    margin-right: auto;
+}*/
+#carto2
+{
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+}
+#cherche
+{
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+.btn-group-wrap {
+    text-align: center;
+}
+
+div.btn-group {
+    margin: 0 auto;
+    text-align: center;
+    width: inherit;
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+}
+.ui-state-highlight
+{
+    background: lightgrey !important;
+}
+.well.wellblue
+{
+    background: rgba(51,204,255,0.3); /*#33CCFF !important;*/
+
+}
+.well.wellgreen
+{
+    background: rgba(51,255,204,0.3); /*#33FFCC !important;*/
+}
+.well.wellorange
+{
+    background: rgba(255,140,0,0.3); /*#FF8C00 !important;*/
+}
+.well.wellred
+{
+    background: rgba(255,0,0,0.3); /*#FF0000 !important;*/
+}
+.well.wellyellow
+{
+    background: rgba(255,255,0,0.3); /*#FFFF00 !important;*/
+}
+
+.bluealpha{background: rgba(51,204,255,0.3); /*#33CCFF !important;*/}
+.greenalpha{background: rgba(51,255,204,0.3); /*#33FFCC !important;*/}
+.orangelpha{background: rgba(255,140,0,0.3); /*#FF8C00 !important;*/}
+.redalpha{background: rgba(255,0,0,0.3); /*#FF0000 !important;*/}
+.yellowalpha{background: rgba(255,255,0,0.3); /*#FFFF00 !important;*/}
+.footer {
+    position: absolute;
+    bottom: -20;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 20px;
+    background-color: #33CCFF;
+}
+#myfooter
+{
+    min-height: 22px !important;
+    height: 22px !important;
+    background: #444 !important;
+    color: #FFF !important;
+    font-family: 'Montserrat', sans-serif;
+}
+#ed_recherche {
+    /*margin-left: 35px;
+    width: 200px;*/
+    padding-right: 20px;
+    font-family: 'Montserrat', sans-serif;
+}
+#searchclear {
+    position: absolute;
+    right: 5px;
+    top: 0;
+    bottom: 0;
+    height: 14px;
+    margin: auto;
+    font-size: 14px;
+    cursor: pointer;
+    color: #ccc;
+}
+a
+{
+    color:#fff;
+}
+a:hover
+{
+    color:#0af;
+}
+.nav-tabs{
+  /*background-color:#AAA;*/
+  background-color: rgba(0,0,0,0.1);
+  font-size: 16px;
+  /*font-family: 'Montserrat', sans-serif;*/
+}
+.nav-tabs.active{
+    color:#fff !important;
+}
+.nav-tabs.active{
+    color:#fff !important;
+}
+.tab-content{
+    /*background-color:#999;*/
+    color:#fff;
+    padding:5px;
+    color:#000;
+    font-weight: bold;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus
+{
+    /*background: url(../images/gloss.png) !important;*/
+    background-image: url(../images/gloss.png) !important;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color:#fff;
+    font-weight: bold !important;
+}
+.bg-red
+{
+    background-color: red;
+}
+.bg-blue
+{
+    background-color: lightblue;
+}
+.bg-green
+{
+    background-color: lime;
+}
+.bg-yellow
+{
+    background-color: yellow;
+}
+/* JQGRID */
+/* Pager text */
+.ui-paging-info{
+   font-size: 11px !important;
+   font-family: 'Montserrat', sans-serif;
+}
+/* Columns title */
+.ui-jqgrid-htable,
+.ui-jqgrid-btable,
+.ui-jqgrid-bdiv,
+.ui-jqgrid
+{
+    font-size:11px !important;
+    font-family: 'Montserrat', sans-serif;
+}
+/* Content of the table */
+#resultat
+{
+    font-size:11px !important;
+    font-family: 'Montserrat', sans-serif;
+}
+/* Pager */
+.ui-pg-table
+{
+    font-size: 10px;
+}
+/* ROW - COLUMNS */
+.row {
+  margin-bottom: 20px;
+}
+.row .row {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+[class*="col-"] {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #eee;
+  background-color: rgba(86,61,124,.15);
+  border: 1px solid #ddd;
+  border: 1px solid rgba(86,61,124,.2);
+}

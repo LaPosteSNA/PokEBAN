@@ -1,0 +1,441 @@
+<html lang="fr">
+<head>
+    {% block head %}
+    <title>Python Flask Bucket List App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- FICHIERS STYLE -->
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap-theme.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/jumbotron-narrow.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/blitzer/jquery-ui-1.10.4.custom.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/banana.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/popup.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/leaflet.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/ui.jqgrid.css') }}" rel="stylesheet">
+    <!-- FICHIERS JAVASCRIPT -->
+    <script src="{{ url_for('static', filename='js/jquery-1.11.0.min.js') }}" type="application/javascript"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}" type="application/javascript"></script>
+    <script src="{{ url_for('static', filename='js/jquery-ui-1.10.4.custom.js') }}" type="application/javascript"></script>
+    <script src="{{ url_for('static', filename='js/jquery.jqGrid.src.js') }}" type="application/javascript"></script>
+    <script src="{{ url_for('static', filename='js/i18n/grid.locale-fr.js') }}" type="application/javascript"></script>
+    <script src="{{ url_for('static', filename='js/leaflet-src.js') }}" type="application/javascript"></script>
+    <script src="{{ url_for('static', filename='js/carto_tools.js') }}" type="application/javascript"></script>
+    <style>
+        pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+        .string { color: green; }
+        .number { color: darkorange; }
+        .boolean { color: blue; }
+        .null { color: magenta; }
+        .key { color: red; }
+    </style>
+    {% endblock %}
+
+    <script>
+        function drawBar(value, options, rowObject)
+        {
+            var pds = parseFloat(value);
+            if(pds < 0.5)
+            {
+                // $("#resultat").setCell(id, 'score', '', {'color':'red','background-color':'black', 'title':pds});
+                graphColor="red";
+            }
+            if((pds >= 0.5) && (pds <= 0.65))
+            {
+                // $("#resultat").setCell(id, 'score', '', {'color':'lightblue','background-color':'black', 'title':pds});
+                graphColor="lightblue";
+            }
+            if((pds > 0.65) && (pds <= 0.75))
+            {
+                // $("#resultat").setCell(id, 'score', '', {'color':'lime','background-color':'black', 'title':pds});
+                graphColor="green";
+            }
+            if(pds >0.75)
+            {
+                // $("#resultat").setCell(id, 'score', '', {'color':'yellow','background-color':'black', 'title':pds});
+                graphColor="lime";
+            }
+            var cellval = parseFloat(value);
+            var cell = '<div style="margin-top:0px;vertical-align:middle">';
+            // cell += '<div style="margin-left: 5px;clear:both; float: right;vertical-align:middle;width:50px">' + (cellval * 100).toFixed(2).toString() + '%' + '</div>';
+            cell += '<div style="margin-top:0px;vertical-align:middle;width:200px;height:14px;border:1px solid black">';
+            cell += '<div style="background: '+graphColor+'; float: left; width: ' + (cellval * 200) + 'px; height: 100%;"><p style="float:right;">' + (cellval * 100).toFixed(2).toString() + '%' + '</p></div>';
+            cell += '</div>';
+            cell += '</div>';
+            return cell;
+        }
+        $(document).ready(function()
+        {
+            // Clear the search field & result
+            $("#searchclear").click(function(){
+                jQuery('#resultat').jqGrid('clearGridData');
+                $("#ed_recherche").val('');
+                $("#detailFromBan").html('');
+                $("#carto2").html("");
+                // $("#log").text("");
+                // $("#detail").text("");
+                // if(osmmap != undefined)
+                //     osmmap.destroy;
+                // osmmap = null;
+                // $("#carto2").html("");
+            });
+
+
+        });
+    </script>
+</head>
+
+<body>
+    <div class="contaixner">
+        <div class="header">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <!-- <li role="presentation" class="active"><a href="/">Accueil</a>
+                    </li> -->
+                    <!-- <li role="presentation"><a href="#">Sign In</a>
+                   </li>
+                   <li role="presentation"><a href="showSignUp">Sign Up</a>
+                   </li> -->
+                </ul>
+            </nav>
+
+        </div>
+        <h3 class="text-muted">PocaBan</h3>
+        <div class="jumbotron">
+            <h2>Recherche...</h2>
+            <!-- <p class="lead"></p> -->
+            <form method="get" action="/cherche">
+            <p>
+                <div class="btn-group-wrap">
+                    <div class="btn-group">
+                        <div id="cherche">
+                            <input class="form-control" type="search" id="ed_recherche" name="ed_recherche" placeholder="Que cherchez vous ?" style="width: 350px;margin-left:auto !important; margin-right:auto !important;" {% if ed_recherche %}value="{{ ed_recherche }}"{% endif %}>
+                            <span id="searchclear" class="glyphicon glyphicon-remove-circle"></span>
+                        </div>
+                    </div>
+                </div>
+                <!-- <input type="text" placeholder="Que cherchez vous..." id="str_cherche" name="str_cherche"  {% if str_cherche %}value="{{ str_cherche }}"{% endif %} /> -->
+            </p>
+            <!-- <p><a class="btn btn-sm btn-success" href="cherche?q=" role="button">Rechercher...</a> -->
+            </p>
+            </form>
+
+        </div>
+        <!-- <div class="row marketing"> -->
+            <!-- <div class="col-lg-6"> -->
+            {{response}}
+            {% if reponse %}
+                <h4>Resultat</h4>
+                <div id="tableau" xxxstyle="float:left;">
+                    <center>
+                    <table id="resultat"  style="width:auto !important;margin-left:auto !;" ></table>
+                    <div id="respager"></div>
+                    </center>
+                </div>
+                <script>
+                    var mesdatas = '{{ reponse|tojson|safe }}';
+                    $("#resultat").jqGrid(
+                    {
+                        //  url:"http://api-adresse.data.gouv.fr/search?q=route orton&limit=15",
+                        regional : 'fr',
+                        datastr: mesdatas,
+                        datatype:'jsonstring',
+                        colNames:['Pds', 'Type', 'Voie', 'Code Postal', 'Lat', 'Lon','', 'Ident.', '','N°'],
+                        colModel:[
+                            {
+                                label:'Pds', name:'score', jsonmap:"properties.score", width:"105px", formatter:drawBar,search: false
+                            },
+                            {label:'Type', name:'typedata', jsonmap:"properties.type", width:60,search: true},
+                            {label:'Voie', name:'label', jsonmap:"properties.label", width:150,search: true},
+                            {label:'Code Postal', name:'postcode', jsonmap:"properties.postcode", width:70,search: true},
+                            {label:'Lat',name:'lat',jsonmap:"geometry.coordinates.0", width:30,search: false},
+                            {label:'Lon',name:'lon',jsonmap:"geometry.coordinates.1", width:30,search: false},
+                            {label:'Data',name:'datas',jsonmap:"datas", width:0,hidden: true},
+                            {label:'Ident', name:'ident',jsonmap:"properties.id",width:20, search: false},
+                            {label:'detail', name:"detail", width:30,
+                                formatter:function (cellvalue, options, rowObject)
+                                {
+                                    var tmp = options.rowId;
+                                    return "<input type='button' value='detail' onclick='getDetail("+ tmp +")'\>";
+                                }
+                            },
+                            {label:'Numéro', name:'number', jsonmap:"properties.housenumber", width:5,hidden:true}
+                            // {label:'carte',name:'carte',cellattr: function(rowId, value, rowObject, colModel, arrData) { return ' rowspan=8'; },width:400}
+                        ],
+                        rowNum: 6,
+                        // autowidth: true,
+                        width: 1000,
+                        height: 150,
+                        loadonce: false,
+                        viewrecords: true,
+                        rowList: [10,20,30,40],
+                        hoverrows: true,
+                        gridview: false,
+                        sortable: true,
+                        jsonReader:
+                        {
+                            repeatitems:false,
+                            root:"features",
+                            pages:1,
+                            records:1
+                        },
+                        pager: $('#respager'),
+                        loadui:"enable",
+                        loadtext:"<div style='vertical-align:middle;align:left;'><img style='vertical-align:middle;align:left;' src='" + "{{ url_for('static', filename='images/wait.gif') }}"+"'>Chargement...</img></div>",
+                        onSelectRow: function(rowid, status)
+                        {
+                            onSelectRowExtern(rowid, status);
+                        },
+                        // afterInsertRow: function(rowid, rowdata,rowelem)
+                        // {
+                        //     // Create a list of type of data "street, housenumber, ...."
+                        //     var testtype = rowdata.typedata;
+                        //     if(_list_type.indexOf(testtype) == -1)
+                        //     {
+                        //         _list_type.push(testtype);
+                        //     }
+                        // },
+                        gridComplete: function(data)
+                        {
+                            // //get the distinct types from the data set coming back
+                            // var length = data.length;
+                            // var types = [];
+                            //
+                            // for (var i = 0; i < length; i++) {
+                            //     types.push(data[i]['type']);
+                            // }
+                            //
+                            // var uniqueTypes = getUnique(types);
+                            //
+
+                            // $('select[name="typedata"]').empty().html('<option value="">All</option>');
+                            // //
+                            // for (var i = 0; i < _list_type.length; i++)
+                            // {
+                            //       $('select[name="typedata"]').append($('<option value="' + _list_type[i] + '">' + _list_type[i] + '</option>'));
+                            // }
+
+                            // $tableau.jqGrid("setColProp", "type", {
+                            //     stype: "select",
+                            //     searchoptions: {
+                            //         value: _list_type,
+                            //         sopt: ["eq", "ne"]
+                            //     }
+                            // });
+                            // $tableau.setColProp("type",
+                            // {
+                            //     stype: "select",
+                            //     searchoptions:
+                            //     {
+                            //         value: _list_type,
+                            //         sopt: ["eq","ne"]
+                            //     }
+                            // });
+                        }
+                    }).jqGrid('navGrid', '#respager', {edit: false, add: false, del: false, search: false});
+                    $tableau = $("#resultat");
+                </script>
+            {% endif %}
+
+            <!--
+            <!-- <div id="carto2" style="width:250px; height:250px; margin-left:auto;margin-right:auto;float:right;"></div>   -->
+            <!-- <div name="carto2" class="carto2" id="carto2" style="float:right;border:1px solid black;width:500px; height:250px;" class="ui-widget ui-widget-content ui-corner-all"></div> -->
+            <div class="well well-sm wellblue">
+                <table style="width:100% !important; xborder:1px solid black;">
+                <tr>
+                <td style="width:60% !important">
+                    <div class="panel panel-primary" style="width:100% !important; height:100% !important; ">
+                        <div class="panel-heading panel-heading-sm">
+                            <h3 class="panel-title">Votre sélection...&nbsp;&nbsp;</h3>
+                        </div>
+                        <div id="detailFromBan" style="font-size: 11px !important;height:260px !important;overflow-x:scroll">
+                        <!-- <div class="panel-body" id="detail" style="font-size: 11px !important;height:260px !important;overflow-x:scroll"> -->
+
+                        </div>
+                    </div>
+                </td>
+                <td style="width:38% ! important">
+                    <div class="panel panel-info" style="width:100% !important; height:100% !important; ">
+                        <div class="panel-heading panel-heading-sm">
+                            <h3 class="panel-title">Cartographie</h3>
+                        </div>
+                        <div class="panel-body" id="detail" style="font-size: 11px !important;height:260px !important;">
+                            <div name="carto2" class="carto2" id="carto2" style="mxargin-left:auto;xfloat:right;height:100%;width:100%;border:1px solid black" class="ui-widget ui-widget-content ui-corner-all"></div>
+                        </div>
+                    </div>
+                </td>
+                </tr>
+                </table>
+        </div>
+        <nav class="navbar navbar-default navbar-fixed-bottom" id="myfooter">
+            <!-- style="height:22px !important;background-image:url('/images/banana-alpha.png');background-repeat:no-repeat;"> -->
+            <div class="container" style="height:22px !important;">
+                <!-- <img src="/images/banana-alpha.png" width="64px" height="50px" style="float:right;background-repeat:none;width:128px" /> -->
+                <p class="text-warning" style="font-weight:bold;text-align:right;color:#fff;font-size:14px;">By alphabetical order :
+                <a href="https://www.etalab.gouv.fr/">ETALAB</a> /
+                <a href="http://www.ign.fr/">IGN</a> /
+                <a href="http://www.laposte.fr/entreprise/produits-et-services/sna-normalisation-des-adresses">LA POSTE - SNA</a></p>
+            </div>
+        </nav>
+    </div>
+
+    <script type="text/javascript">
+        function onSelectRowExtern(rowid, status)
+        {
+            // Display map (using leaflet)
+            var rowdata = $tableau.getRowData(rowid);
+            var _lat = parseFloat(rowdata.lat);
+            var _lon = parseFloat(rowdata.lon);
+            console.log(_lat + " / " + _lon); ciaban = rowdata.ident+"__"+rowdata.number+"_";
+
+            // Si _lat & _lon sont non null affiche la carte centré sur les coordonnées
+            if(mapll == undefined)
+            {
+                // Create an OL(OSM) map object
+                // $("#carto").css("background-image","");
+                ShowLLMap(_lat, _lon);
+                AddLLMapMarker(_lat, _lon, rowdata.label);
+                // ShowMapOL(_lat, _lon);
+                // AddOSMMarker(_lat, _lon);
+            }
+            else
+            {
+                // If map already initiated then just center on new position and the row is selected.
+                if(status)
+                {
+                    centerOnLL(_lat, _lon);
+                    // AddOSMMarker(_lat, _lon);
+                    AddLLMapMarker(_lat, _lon, rowdata.label);
+                }
+            }
+
+            // Analyse...
+            // - Si housenumber retourné n° existe, sinon le n° saisie n'éxiste pas....Demande création ?
+            // - ...(to continue)
+            var hn_present = false;
+            var userinput = $("#ed_recherche").val();
+            console.log(userinput);
+            var splitstr = userinput.split(" ");
+            console.log(splitstr);
+            // Check si slitstr[0] est un nombre
+            if(isNaN(splitstr[0]) == false)
+            {
+                if(rowdata.typedata == "housenumber")
+                {
+                    hn_present = true;
+                    if($("#add_hn_button").length != 0)
+                    {
+                        $("#add_hn_button").remove();
+                    }
+                }
+                else
+                {
+                    // highlightmoica($("#add_hn_button"), "#FFAA00", 3000);
+                    if($("#add_hn_button").length == 0)
+                    {
+                        $(".btn-group-wrap").append("<br><button type='button' id='add_hn_button' class='btn-primary btn-xs' style='font-size:8px;' title='Le n°"+splitstr[0]+" n&apos;existe pas dans la voie saisie'>Ajouter le n°"+splitstr[0]+" à la voie</button>");
+                        // highlightmoica($("#add_hn_button"), "#FFAA00", 3000);
+                        $("#add_hn_button").click(function()
+                        {
+                            // Envoi d'une création d'un "housenumber" à la BAN !
+                            // type = street ==> id = fantoir + 1 lettre
+                            var idstreet = rowdata.ident;
+                            idstreet = idstreet.substring(0, idstreet.length);
+                            var new_hn = splitstr[0];
+                            // GET http://localhost:5959//street/fantoir:332930111
+                            var fanfan = idstreet.split("_");
+                            // alert(fanfan[1] + " " + new_hn);
+
+                            $.ajax({
+                                url:"/updateban",
+                                type:"POST",
+                                data:
+                                {
+                                    cia:fanfan[1],
+                                    number:new_hn
+                                },
+                                success: function(data)
+                                {
+                                    // var mesdatas = JSON.stringify('{#{ detail|tojson|safe }#}');
+                                    // var mesdatas = '{xx{ reponse|tojson|safe }xx}';
+                                    // var bandatas = '{{ detailban|safe }}';
+                                    // bandatas = data;
+                                    showDetailsPopup(data);
+                                    // return bandatas;
+                                },
+                                error: function(data)
+                                {
+                                    alert("ko");
+                                }
+                                // var bandatas = '{{ detailban|safe }}';
+                            });
+
+                            // XHR
+                            // var data = "street="+ idstreet +"&number="+ new_hn +"&version=1";
+                            $("#add_hn_button").remove();
+                        });
+                    }
+                }
+            }
+        }
+
+        function getDetail(rowid)
+        {
+            // Display a pop-up with more informations from AddOk AND BAN !
+            // http://localhost:5959/housenumber/cia:33293_332930111__23_
+            var rowdata = $tableau.getRowData(rowid);
+            var ciaban = rowdata.ident+"__"+rowdata.number+"_";
+            $.ajax({
+                url:"/detail",
+                data:
+                {
+                    cia:ciaban
+                },
+                success: function(data)
+                {
+                    // var mesdatas = JSON.stringify('{#{ detail|tojson|safe }#}');
+                    // var mesdatas = '{xx{ reponse|tojson|safe }xx}';
+                    // var bandatas = '{{ detailban|safe }}';
+                    // bandatas = data;
+                    showDetailsPopup(data);
+                    // return bandatas;
+                },
+                error: function(data)
+                {
+                    alert("ko");
+                }
+                // var bandatas = '{{ detailban|safe }}';
+            });
+        }
+
+        function syntaxHighlight(json) {
+            if (typeof json != 'string') {
+                 json = JSON.stringify(json, undefined, 2);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'key';
+                    } else {
+                        cls = 'string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        function showDetailsPopup(datas)
+        {
+            var str = JSON.stringify(JSON.parse(datas), undefined, 4);
+            $("#detailFromBan").html("<pre style='text-align: left; white-space: pre-line;' >" + syntaxHighlight(str) + "</pre>");
+        }
+    </script>
+</body>
+
+</html>
